@@ -187,20 +187,22 @@ jobs:
 
         # Create PR using GitHub CLI or API
         cat > pr_body.md << EOF
-        ## 🔄 Reverse Sync from docs-sync
+        <!-- comment -->
+
+        ### 🔄 Reverse Sync from docs-sync
 
         This PR incorporates documentation changes from external contributors to the docs-sync repository.
 
-        ### Original PR Details
+        #### Original PR Details
         - **Repository**: danielfbm/docs-sync
         - **PR**: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
         - **Author**: @${{ github.event.pull_request.user.login }}
         - **URL**: ${{ github.event.pull_request.html_url }}
 
-        ### Changes
+        #### Changes
         This PR includes changes to documentation files that were contributed by external contributors to the public docs-sync repository.
 
-        ### Important Notes
+        #### Important Notes
         - ⚠️ This PR contains the `[reverse-sync]` marker to prevent infinite sync loops
         - ✅ Once merged, this will NOT trigger a forward sync back to docs-sync
         - 🔍 Please review the changes to ensure they align with internal documentation standards

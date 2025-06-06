@@ -28,7 +28,7 @@ jobs:
           echo "skip_sync=true" >> $GITHUB_OUTPUT
           echo "🤖 PR is from sync bot - skipping reverse sync"
         else
-          echo "skip_sync=false" >> $GITHUB_OUTPUTcre
+          echo "skip_sync=false" >> $GITHUB_OUTPUT
           echo "👥 PR is from external contributor - proceeding with reverse sync"
         fi
 

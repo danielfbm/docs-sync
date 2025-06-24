@@ -5,6 +5,7 @@ on:
     types: [closed]
     branches:
       - main
+      - release-*
     paths:
       - 'docs/**'
       - 'README.md'
@@ -20,7 +21,12 @@ jobs:
       run: |
         pr_author="${{ github.event.pull_request.user.login }}"
         pr_title="${{ github.event.pull_request.title }}"
+        pr_base_ref="${{ github.event.pull_request.base.ref }}"
+        pr_head_ref="${{ github.event.pull_request.head.ref }}"
 
+        echo "=> PR Title: $pr_title"
+        echo "=> PR Author: $pr_author"
+        echo "=> PR Refs: $pr_base_ref --> $pr_head_ref"
         # Skip if the PR is from our sync bot or has sync-related keywords
         if [[ "$pr_author" == "github-actions[bot]" ]] ||
            [[ "$pr_title" == *"Sync documentation"* ]] ||

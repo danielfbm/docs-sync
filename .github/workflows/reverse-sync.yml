@@ -45,6 +45,7 @@ jobs:
         token: ${{ secrets.SYNC_TOKEN }}
         path: docs-sync
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.base.ref }}
 
     - name: Checkout private-docs repository
       if: steps.check_sync_bot.outputs.skip_sync == 'false'
@@ -54,6 +55,7 @@ jobs:
         token: ${{ secrets.SYNC_TOKEN }}
         path: private-docs
         fetch-depth: 0
+        ref: ${{ github.event.pull_request.base.ref }}
 
     - name: Get PR changes
       if: steps.check_sync_bot.outputs.skip_sync == 'false'
@@ -187,6 +189,7 @@ jobs:
       run: |
         cd private-docs
         branch_name="${{ steps.create_branch.outputs.branch_name }}"
+        pr_base_ref="${{ github.event.pull_request.base.ref }}"
 
         # Push the branch
         git push origin "$branch_name"
@@ -225,7 +228,7 @@ jobs:
           -d "{
             \"title\": \"[reverse-sync] Documentation changes from docs-sync PR #${{ github.event.pull_request.number }}\",
             \"head\": \"$branch_name\",
-            \"base\": \"main\",
+            \"base\": \"$pr_base_ref\",
             \"body\": \"$(cat pr_body.md | sed 's/\"/\\\"/g' | tr '\n' ' ')\"
           }"
 
@@ -251,5 +254,6 @@ jobs:
           echo "### Details:" >> $GITHUB_STEP_SUMMARY
           echo "- **Source PR**: #${{ github.event.pull_request.number }} by @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch**: ${{ steps.create_branch.outputs.branch_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Base ref**: ${{ github.event.pull_request.base.ref }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Target repository**: danielfbm/private-docs" >> $GITHUB_STEP_SUMMARY
         fi

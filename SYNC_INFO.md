@@ -1,12 +1,12 @@
 # Documentation Sync Information
 
-- **Last synced**: 2025-06-06 09:50:52 UTC
+- **Last synced**: 2025-06-25 03:02:26 UTC
 - **Source repository**: danielfbm/private-docs
-- **Source commit**: [b1d5e58680e6bfba054d86008d3efb0714ed1a73](https://github.com/danielfbm/private-docs/commit/b1d5e58680e6bfba054d86008d3efb0714ed1a73)
+- **Source commit**: [d69b3b599b29920049edb10321d906968ce9b2f3](https://github.com/danielfbm/private-docs/commit/d69b3b599b29920049edb10321d906968ce9b2f3)
 - **Triggered by**: danielfbm
-- **Workflow run**: [#7](https://github.com/danielfbm/private-docs/actions/runs/15487783610)
+- **Workflow run**: [#15](https://github.com/danielfbm/private-docs/actions/runs/15866304567)
 
 ## Files synced:
 - docs/ directory
 - README.md
-- Total files: 15
+- Total files: 16

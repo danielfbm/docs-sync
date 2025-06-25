@@ -187,49 +187,52 @@ jobs:
     - name: Push branch and create PR
       if: steps.check_sync_bot.outputs.skip_sync == 'false' && steps.get_changes.outputs.has_doc_changes == 'true' && steps.commit_changes.outputs.has_changes == 'true'
       run: |
-        cd private-docs
-        branch_name="${{ steps.create_branch.outputs.branch_name }}"
-        pr_base_ref="${{ github.event.pull_request.base.ref }}"
+      cd private-docs
+      branch_name="${{ steps.create_branch.outputs.branch_name }}"
+      pr_base_ref="${{ github.event.pull_request.base.ref }}"
 
-        # Push the branch
-        git push origin "$branch_name"
+      # Push the branch
+      git push origin "$branch_name"
 
-        # Create PR using GitHub CLI or API
-        cat > pr_body.md << EOF
+      # Create PR body with proper JSON escaping
+      pr_body=$(cat << 'EOF'
+  ### 🔄 Reverse Sync from docs-sync
 
-        ### 🔄 Reverse Sync from docs-sync
+  This PR incorporates documentation changes from external contributors to the docs-sync repository.
 
-        This PR incorporates documentation changes from external contributors to the docs-sync repository.
+  #### Original PR Details
+  - **Repository**: danielfbm/docs-sync
+  - **PR**: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
+  - **Author**: @${{ github.event.pull_request.user.login }}
+  - **URL**: ${{ github.event.pull_request.html_url }}
 
-        #### Original PR Details
-        - **Repository**: danielfbm/docs-sync
-        - **PR**: #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
-        - **Author**: @${{ github.event.pull_request.user.login }}
-        - **URL**: ${{ github.event.pull_request.html_url }}
+  #### Changes
+  This PR includes changes to documentation files that were contributed by external contributors to the public docs-sync repository.
 
-        #### Changes
-        This PR includes changes to documentation files that were contributed by external contributors to the public docs-sync repository.
+  #### Important Notes
+  - ⚠️ This PR contains the `[reverse-sync]` marker to prevent infinite sync loops
+  - ✅ Once merged, this will NOT trigger a forward sync back to docs-sync
+  - 🔍 Please review the changes to ensure they align with internal documentation standards
 
-        #### Important Notes
-        - ⚠️ This PR contains the `[reverse-sync]` marker to prevent infinite sync loops
-        - ✅ Once merged, this will NOT trigger a forward sync back to docs-sync
-        - 🔍 Please review the changes to ensure they align with internal documentation standards
+  ---
+  *This PR was automatically created by the reverse sync workflow.*
+  EOF)
 
-        ---
-        *This PR was automatically created by the reverse sync workflow.*
-        EOF
+      # Create JSON payload with proper escaping
+      json_payload=$(jq -n \
+        --arg title "[reverse-sync] Documentation changes from docs-sync PR #${{ github.event.pull_request.number }}" \
+        --arg head "$branch_name" \
+        --arg base "$pr_base_ref" \
+        --arg body "$pr_body" \
+        '{title: $title, head: $head, base: $base, body: $body}')
 
-        # Create the PR using GitHub API
-        curl -X POST \
-          -H "Authorization: token ${{ secrets.SYNC_TOKEN }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/danielfbm/private-docs/pulls \
-          -d "{
-            \"title\": \"[reverse-sync] Documentation changes from docs-sync PR #${{ github.event.pull_request.number }}\",
-            \"head\": \"$branch_name\",
-            \"base\": \"$pr_base_ref\",
-            \"body\": \"$(cat pr_body.md | sed 's/\"/\\\"/g')\"
-          }"
+      # Create the PR using GitHub API
+      curl -X POST \
+        -H "Authorization: token ${{ secrets.SYNC_TOKEN }}" \
+        -H "Accept: application/vnd.github.v3+json" \
+        -H "Content-Type: application/json" \
+        https://api.github.com/repos/danielfbm/private-docs/pulls \
+        -d "$json_payload"
 
 
 

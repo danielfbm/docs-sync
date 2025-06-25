@@ -196,7 +196,6 @@ jobs:
 
         # Create PR using GitHub CLI or API
         cat > pr_body.md << EOF
-        <!-- comment -->
 
         ### 🔄 Reverse Sync from docs-sync
 
@@ -229,8 +228,10 @@ jobs:
             \"title\": \"[reverse-sync] Documentation changes from docs-sync PR #${{ github.event.pull_request.number }}\",
             \"head\": \"$branch_name\",
             \"base\": \"$pr_base_ref\",
-            \"body\": \"$(cat pr_body.md | sed 's/\"/\\\"/g' | tr '\n' ' ')\"
+            \"body\": \"$(cat pr_body.md | sed 's/\"/\\\"/g')\"
           }"
+
+
 
     - name: Create workflow summary
       run: |
